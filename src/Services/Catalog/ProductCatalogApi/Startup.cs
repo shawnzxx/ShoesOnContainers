@@ -1,19 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Catalog.Domain.Models;
+using Catalog.Infra;
+using Catalog.Infra.Repository;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using ProductCatalogApi.Data;
 
-namespace ProductCatalogApi
+namespace Catalog.Application
 {
     public class Startup
     {
@@ -30,8 +26,14 @@ namespace ProductCatalogApi
             //linked our CatalogSettings with Configuration object, provide strong type configuration
             services.Configure<CatalogSettings>(Configuration);
 
+            #region EntityFramework Core
             var connection = Configuration["ConnectionString"];
-            services.AddDbContext<CatalogContext>(options=>options.UseSqlServer(connection));
+            services.AddDbContext<CatalogContext>(options=>options.UseSqlServer(connection, b => b.MigrationsAssembly("Catalog.Application")));
+            #endregion
+
+            #region Database repository
+            services.AddScoped<ICatalogRepository, CatalogRepository>();
+            #endregion
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 

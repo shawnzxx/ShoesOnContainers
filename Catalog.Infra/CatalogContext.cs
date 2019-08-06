@@ -1,12 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Catalog.Domain.Models;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using ProductCatalogApi.Domain;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace ProductCatalogApi.Data
+namespace Catalog.Infra
 {
     public class CatalogContext : DbContext
     {
@@ -18,10 +14,10 @@ namespace ProductCatalogApi.Data
         {
             modelBuilder.Entity<CatalogBrand>(ConfigureCatalogBrand);
             modelBuilder.Entity<CatalogType>(ConfigureCatalogType);
-            modelBuilder.Entity<Catalog>(ConfigureCatalogItem);
+            modelBuilder.Entity<CatalogItem>(ConfigureCatalogItem);
         }
 
-        private void ConfigureCatalogItem(EntityTypeBuilder<Catalog> builder)
+        private void ConfigureCatalogItem(EntityTypeBuilder<CatalogItem> builder)
         {
             builder.ToTable("Catalog");
             builder.Property(c => c.Id)
@@ -68,6 +64,6 @@ namespace ProductCatalogApi.Data
 
         public DbSet<CatalogType> CatalogTypes { get; set; }
         public DbSet<CatalogBrand> CatalogBrands { get; set; }
-        public DbSet<Catalog> Catalogs { get; set; }
+        public DbSet<CatalogItem> Catalogs { get; set; }
     }
 }

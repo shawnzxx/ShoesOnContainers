@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.IO;
 
-namespace ProductCatalogApi.Controllers
+namespace Catalog.Application.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]

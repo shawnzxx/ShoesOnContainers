@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ProductCatalogApi.Domain
+namespace Catalog.Domain.Models
 {
-    public class Catalog
+    public class CatalogItem
     {
         public int Id { get; set; }
         public string Name { get; set; }

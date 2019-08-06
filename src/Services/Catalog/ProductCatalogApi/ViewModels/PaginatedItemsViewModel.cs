@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ProductCatalogApi.ViewModels
+namespace Catalog.Application.ViewModels
 {
     public class PaginatedItemsViewModel<TEntity> where TEntity : class
     {

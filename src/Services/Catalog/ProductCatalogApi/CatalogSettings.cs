@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ProductCatalogApi
+namespace Catalog.Application
 {
     public class CatalogSettings
     {

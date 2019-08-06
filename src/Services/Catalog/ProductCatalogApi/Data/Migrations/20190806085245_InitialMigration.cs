@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace ProductCatalogApi.Data.Migrations
+namespace Catalog.Application.Data.Migrations
 {
     public partial class InitialMigration : Migration
     {
@@ -43,7 +43,7 @@ namespace ProductCatalogApi.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "CatalogItem",
+                name: "Catalog",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false),
@@ -57,15 +57,15 @@ namespace ProductCatalogApi.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_CatalogItem", x => x.Id);
+                    table.PrimaryKey("PK_Catalog", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_CatalogItem_CatalogBrand_CatalogBrandId",
+                        name: "FK_Catalog_CatalogBrand_CatalogBrandId",
                         column: x => x.CatalogBrandId,
                         principalTable: "CatalogBrand",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_CatalogItem_CatalogType_CatalogTypeId",
+                        name: "FK_Catalog_CatalogType_CatalogTypeId",
                         column: x => x.CatalogTypeId,
                         principalTable: "CatalogType",
                         principalColumn: "id",
@@ -73,20 +73,20 @@ namespace ProductCatalogApi.Data.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_CatalogItem_CatalogBrandId",
-                table: "CatalogItem",
+                name: "IX_Catalog_CatalogBrandId",
+                table: "Catalog",
                 column: "CatalogBrandId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_CatalogItem_CatalogTypeId",
-                table: "CatalogItem",
+                name: "IX_Catalog_CatalogTypeId",
+                table: "Catalog",
                 column: "CatalogTypeId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "CatalogItem");
+                name: "Catalog");
 
             migrationBuilder.DropTable(
                 name: "CatalogBrand");
