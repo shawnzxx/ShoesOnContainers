@@ -161,7 +161,7 @@ namespace ProductCatalogApi.Controllers
         {
             var catalogItem = await _catalogContext.Catalogs.SingleOrDefaultAsync(i => i.Id == catalogToUpdate.Id);
             if (catalogItem == null) {
-                return NotFound(new { Message = $"Catalog item with id {catalogToUpdate.Id} can not be found.");
+                return NotFound(new { Message = $"Catalog item with id {catalogToUpdate.Id} can not be found." });
             }
 
             catalogItem = catalogToUpdate;
