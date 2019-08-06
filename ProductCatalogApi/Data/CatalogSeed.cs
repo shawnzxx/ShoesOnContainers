@@ -11,6 +11,8 @@ namespace ProductCatalogApi.Data
     {
         public static async Task SeedAsync(CatalogContext context)
         {
+            //this line of code will be able to apply pending migrations folder and create table for us
+            //no need to manually run the update-database command
             context.Database.Migrate();
 
             //Only seed when table don't have any data
