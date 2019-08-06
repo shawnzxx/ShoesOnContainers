@@ -1,0 +1,36 @@
+version: "3.4"
+
+networks:
+   frontend:
+   backend:
+
+services:
+   catalog:
+      build:
+         context: .\src\Services\ProductCatalogApi
+         dockerfile: Dockerfile
+      environment:
+         - ConnectionString=Server=mssqlserver;Database=CatalogDb;User ID=sa;Password=P@ssw0rd123!;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=True;Connection Timeout=30
+      container_name: catalogapi
+      ports:
+         - "5000:80"
+      networks:
+         - backend
+         - frontend
+      depends_on:
+         - mssqlserver
+         
+   mssqlserver:
+      image: "microsoft/mssql-server-linux:latest"
+      ports:
+         - "5434:1433"
+
+      container_name: mssqlcontainer
+      environment:
+         - ACCEPT_EULA=Y
+         - SA_PASSWORD=P@ssw0rd123!
+      networks:
+         - backend
+
+      
+

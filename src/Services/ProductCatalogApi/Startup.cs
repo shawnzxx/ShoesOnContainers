@@ -30,7 +30,7 @@ namespace ProductCatalogApi
             //linked our CatalogSettings with Configuration object, provide strong type configuration
             services.Configure<CatalogSettings>(Configuration);
 
-            var connection = Configuration["ConnectionStrings"];
+            var connection = Configuration["ConnectionString"];
             services.AddDbContext<CatalogContext>(options=>options.UseSqlServer(connection));
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);

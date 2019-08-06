@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using ProductCatalogApi.Data;
 using ProductCatalogApi.Domain;
@@ -19,11 +20,15 @@ namespace ProductCatalogApi.Controllers
     {
         private readonly CatalogContext _catalogContext;
         private readonly IOptionsSnapshot<CatalogSettings> _settings;
+        private readonly ILogger<CatalogController> _logger;
 
-        public CatalogController(CatalogContext catalogContext, IOptionsSnapshot<CatalogSettings> settings)
+        public CatalogController(CatalogContext catalogContext, IOptionsSnapshot<CatalogSettings> settings, ILogger<CatalogController> logger)
         {
             _catalogContext = catalogContext;
             _settings = settings;
+            _logger = logger;
+            //https://github.com/aspnet/EntityFrameworkCore/issues/7064
+            ((DbContext)catalogContext).ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
         }
 
         // GET api/catalog/types
@@ -46,7 +51,7 @@ namespace ProductCatalogApi.Controllers
 
         // GET api/catalog/items/5
         [HttpGet]
-        [Route("items/{id}")]
+        [Route("items/{id}", Name = "GetItemById")]
         public async Task<IActionResult> GetItemById(int id)
         {
             if (id <= 0)
@@ -139,36 +144,56 @@ namespace ProductCatalogApi.Controllers
         [Route("items")]
         public async Task<IActionResult> CreateCatalog([FromBody] Catalog catalog)
         {
-            var item = new Catalog
+            try
             {
-                CatalogBrandId = catalog.CatalogBrandId,
-                CatalogTypeId = catalog.CatalogTypeId,
-                Name = catalog.Name,
-                Description = catalog.Description,
-                PictureFileName = catalog.PictureFileName,
-                Price = catalog.Price
-            };
+                var item = new Catalog
+                {
+                    CatalogBrandId = catalog.CatalogBrandId,
+                    CatalogTypeId = catalog.CatalogTypeId,
+                    Name = catalog.Name,
+                    Description = catalog.Description,
+                    PictureFileName = catalog.PictureFileName,
+                    Price = catalog.Price,
+                    PictureUrl = "http://externalcatalogbaseurltobereplaced/api/pic/15"
+                };
 
-            _catalogContext.Catalogs.Add(item);
-            await _catalogContext.SaveChangesAsync();
+                _catalogContext.Catalogs.Add(item);
+                await _catalogContext.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetItemById), new { id = item.Id });
+                return CreatedAtRoute("GetItemById", new { id = item.Id }, item);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{ex.Message}");
+                throw;
+            }
+            
         }
 
         [HttpPut]
         [Route("items")]
         public async Task<IActionResult> UpdateCatalog([FromBody] Catalog catalogToUpdate)
         {
-            var catalogItem = await _catalogContext.Catalogs.SingleOrDefaultAsync(i => i.Id == catalogToUpdate.Id);
-            if (catalogItem == null) {
-                return NotFound(new { Message = $"Catalog item with id {catalogToUpdate.Id} can not be found." });
+            try
+            {
+                var catalogItem = await _catalogContext.Catalogs.SingleOrDefaultAsync(i => i.Id == catalogToUpdate.Id);
+                if (catalogItem == null)
+                {
+                    return NotFound(new { Message = $"Catalog item with id {catalogToUpdate.Id} can not be found." });
+                }
+
+                catalogItem = catalogToUpdate;
+                _catalogContext.Catalogs.Update(catalogItem);
+                await _catalogContext.SaveChangesAsync();
+
+                return CreatedAtRoute("GetItemById", new { id = catalogToUpdate.Id }, catalogToUpdate);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{ex.Message}");
+                throw;
             }
 
-            catalogItem = catalogToUpdate;
-            _catalogContext.Catalogs.Update(catalogItem);
-            await _catalogContext.SaveChangesAsync();
-
-            return CreatedAtAction(nameof(GetItemById), new { id = catalogToUpdate.Id });
         }
 
         [HttpDelete]
