@@ -91,8 +91,8 @@ namespace Catalog.Application.Controllers
 
         // GET api/catalog/items/type/1/band/%20?pageSize=4&pageIndex=0
         [HttpGet]
-        [Route("items/type/{catalogTypeId}/brand/{catalogBrandId}")]
-        public async Task<IActionResult> GetItems(int? catalogTypeId, int? catalogBrandId, [FromQuery] int pageSize = 6, [FromQuery] int pageIndex = 0)
+        [Route("items/type/{catalogTypeId?}/brand/{catalogBrandId?}")]
+        public async Task<IActionResult> GetItems(int? catalogTypeId = null, int? catalogBrandId = null, [FromQuery] int pageSize = 6, [FromQuery] int pageIndex = 0)
         {
             var totalCount = await _catalogRepository.GetItemsTotalCount();
 
