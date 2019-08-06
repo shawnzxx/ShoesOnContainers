@@ -12,6 +12,7 @@ using ProductCatalogApi.ViewModels;
 
 namespace ProductCatalogApi.Controllers
 {
+    [Produces("application/json")] //Produce define Accept header type
     [Route("api/[controller]")]
     [ApiController]
     public class CatalogController : ControllerBase
@@ -131,6 +132,57 @@ namespace ProductCatalogApi.Controllers
             var model = new PaginatedItemsViewModel<Catalog>(pageSize, pageIndex, totalCount, itemsOnPage);
 
             return Ok(model);
+        }
+
+
+        [HttpPost]
+        [Route("items")]
+        public async Task<IActionResult> CreateCatalog([FromBody] Catalog catalog)
+        {
+            var item = new Catalog
+            {
+                CatalogBrandId = catalog.CatalogBrandId,
+                CatalogTypeId = catalog.CatalogTypeId,
+                Name = catalog.Name,
+                Description = catalog.Description,
+                PictureFileName = catalog.PictureFileName,
+                Price = catalog.Price
+            };
+
+            _catalogContext.Catalogs.Add(item);
+            await _catalogContext.SaveChangesAsync();
+
+            return CreatedAtAction(nameof(GetItemById), new { id = item.Id });
+        }
+
+        [HttpPut]
+        [Route("items")]
+        public async Task<IActionResult> UpdateCatalog([FromBody] Catalog catalogToUpdate)
+        {
+            var catalogItem = await _catalogContext.Catalogs.SingleOrDefaultAsync(i => i.Id == catalogToUpdate.Id);
+            if (catalogItem == null) {
+                return NotFound(new { Message = $"Catalog item with id {catalogToUpdate.Id} can not be found.");
+            }
+
+            catalogItem = catalogToUpdate;
+            _catalogContext.Catalogs.Update(catalogItem);
+            await _catalogContext.SaveChangesAsync();
+
+            return CreatedAtAction(nameof(GetItemById), new { id = catalogToUpdate.Id });
+        }
+
+        [HttpDelete]
+        [Route("items/{id}")]
+        public async Task<IActionResult> DeleteCatalog(int id) {
+
+            var catalogItem = await _catalogContext.Catalogs.SingleOrDefaultAsync(i => i.Id == id);
+            if (catalogItem == null)
+            {
+                return NotFound();
+            }
+            _catalogContext.Remove(catalogItem);
+            await _catalogContext.SaveChangesAsync();
+            return NoContent();
         }
 
         private List<Catalog> ChangeUrlPlaceHolder(List<Catalog> items)
