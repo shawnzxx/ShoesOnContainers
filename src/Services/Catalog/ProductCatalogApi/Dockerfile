@@ -10,4 +10,4 @@ RUN dotnet publish -o /publish --configuration Release
 FROM mcr.microsoft.com/dotnet/core/aspnet
 WORKDIR /publish
 COPY --from=build-env /publish .
-ENTRYPOINT ["dotnet", "ProductCatalogApi.dll"]
+ENTRYPOINT ["dotnet", "Catalog.Application.dll"]
